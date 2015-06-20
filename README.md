@@ -17,5 +17,5 @@ MIT
 
 
 # Credits
-Thanks to everyone from the EEVBlog forum.<br>
+Thanks to everyone from the EEVBlog forum, with special thanks going to miguelvp and John Coloccia.<br>
 Credits should also go to Stephen Stair for figuring out how to get frames out of this puppy. His project is found at https://github.com/sgstair/winusbdotnet.
