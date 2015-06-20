@@ -107,7 +107,7 @@ void ThermalFrame::computeMinMax()
 //////////////////////////////////////////////////////////////////////////
 /// getOffsetCalibration
 //////////////////////////////////////////////////////////////////////////
-std::vector<int> ThermalFrame::getOffsetCalibration()
+std::vector<int> ThermalFrame::getOffsetCalibration() const
 {
 	std::vector<int> calibration;
 
@@ -140,7 +140,7 @@ void ThermalFrame::applyOffsetCalibration(const std::vector<int> & calibration)
 //////////////////////////////////////////////////////////////////////////
 /// getGainCalibration
 //////////////////////////////////////////////////////////////////////////
-std::vector<double> ThermalFrame::getGainCalibration()
+std::vector<double> ThermalFrame::getGainCalibration() const
 {
 	std::vector<double> calibration;
 

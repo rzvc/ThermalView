@@ -45,12 +45,12 @@ public:
 	void computeMinMax();
 
 	// Offset calibration
-	std::vector<int> getOffsetCalibration();
+	std::vector<int> getOffsetCalibration() const;
 	void applyOffsetCalibration(const std::vector<int> & calibration);
 
 
 	// Gain calibration
-	std::vector<double> getGainCalibration();
+	std::vector<double> getGainCalibration() const;
 	void applyGainCalibration(const std::vector<double> & calibration);
 
 
