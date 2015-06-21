@@ -45,6 +45,8 @@ void MainDialog::OnNewFrame(const std::vector<uint16_t> & data)
 			// Offset calibration (every time the shutter is heard)
 			case 1:
 				frame.applyGainCalibration(m_gain_cal);
+				frame.computeMinMax();
+				
 				m_offset_cal = frame.getOffsetCalibration();
 
 				m_first_after_cal = true;
