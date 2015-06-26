@@ -25,7 +25,10 @@
 #include <wx/event.h>
 #include "MainDialog.h"
 #include <wx/image.h>
+
+#pragma warning (disable: 4200)
 #include <libusb.h>
+#pragma warning (default: 4200)
 
 // Define the MainApp
 class MainApp : public wxApp

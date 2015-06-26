@@ -246,7 +246,7 @@ bool SeekThermal::isOpen()
 {
 	lock_guard<recursive_mutex> lck(m_mx);
 	
-	return m_handle;
+	return m_handle != 0;
 }
 
 

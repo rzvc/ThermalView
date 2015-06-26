@@ -21,7 +21,10 @@
  * SOFTWARE.
  */
 
+#pragma warning (disable: 4200)
 #include <libusb.h>
+#pragma warning (default: 4200)
+
 #include <cstdint>
 #include <vector>
 #include <boost/thread.hpp>
