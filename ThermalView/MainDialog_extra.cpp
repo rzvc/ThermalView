@@ -116,7 +116,11 @@ void MainDialog::UpdateFrame()
 	}
 
 
-	m_new_img = m_profiles[m_sel_profile]->getImage(m_frame_extra);
+	// Update the image to be displayed
+	if (m_auto_range)
+		m_new_img = m_profiles[m_sel_profile]->getImage(m_frame_extra, m_frame_extra.m_min_val, m_frame.m_max_val);
+	else
+		m_new_img = m_profiles[m_sel_profile]->getImage(m_frame_extra, m_manual_min, m_manual_max);
 
 		
 	QueueEvent(new wxCommandEvent(ON_MSG_FRAME_READY));

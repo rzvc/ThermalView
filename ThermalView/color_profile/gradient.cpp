@@ -79,11 +79,11 @@ GradientProfile::GradientProfile(const std::string & name, const std::vector< st
 	}
 }
 
-wxImage GradientProfile::getImage(const ThermalFrame & frame) const
+wxImage GradientProfile::getImage(const ThermalFrame & frame, uint16_t min_val, uint16_t max_val) const
 {
 	wxImage img(206, 156);
 
-	uint16_t real_span = frame.m_max_val - frame.m_min_val;
+	uint16_t real_span = max_val - min_val;
 
 	for (size_t y = 0; y < 156; ++y)
 	{
@@ -92,12 +92,15 @@ wxImage GradientProfile::getImage(const ThermalFrame & frame) const
 			size_t pixel = y * 206 + x;
 			uint16_t val = frame.m_pixels[pixel];
 
-			if (val < frame.m_min_val)
-				val = frame.m_min_val;
+			if (val < min_val)
+				val = min_val;
+
+			if (val > max_val)
+				val = max_val;
 
 			// The value should be something between 0 and 255, so we have to map the difference between min_val and max_val to 0 to 255
 			if (real_span != 0)
-				val = ((val - frame.m_min_val) * (m_rgb.size() - 1)) / real_span;
+				val = ((val - min_val) * (m_rgb.size() - 1)) / real_span;
 			else
 				val = m_rgb.size() / 2;
 

@@ -37,14 +37,14 @@ wxDECLARE_EVENT(ON_MSG_FRAME_READY, wxCommandEvent);
 class MainDialog : public MainDialogBaseClass
 {
 public:
-	SeekThermal				m_thermal;				// The camera interface
+	SeekThermal					m_thermal;				// The camera interface
 	ThermalFrame				m_frame;				// Current frame on display
 	ThermalFrame				m_frame_extra;	// Current frame on display after extra calibration
-	wxImage					m_new_img;				// The new image
+	wxImage						m_new_img;				// The new image
 	
 	std::recursive_mutex		m_mx;
 	
-	std::vector<double>		m_gain_cal;			// Gain calibration data - Frame ID 4
+	std::vector<double>			m_gain_cal;			// Gain calibration data - Frame ID 4
 	std::vector<uint16_t>		m_unknown_gain;		// Unknown gain pixels - Frame ID 4
 	std::vector<int>			m_offset_cal;			// Offset calibration - Frame ID 1
 
@@ -61,6 +61,10 @@ public:
 	
 	
 	bool						m_got_image;			// Indicates that we receive at least one image
+
+	bool						m_auto_range;
+	int							m_manual_min;
+	int							m_manual_max;
 	
 
     MainDialog(wxWindow* parent);
@@ -87,5 +91,8 @@ protected:
     virtual void OnCheck_use_extra_calCheckboxClicked(wxCommandEvent& event);
     virtual void OnLb_profileChoiceSelected(wxCommandEvent& event);
     virtual void OnButton_saveButtonClicked(wxCommandEvent& event);
+	virtual void OnCheck_auto_rangeCheckboxClicked(wxCommandEvent& event);
+	virtual void OnSlider_lowScrollChanged(wxScrollEvent& event);
+	virtual void OnSlider_highScrollChanged(wxScrollEvent& event);
 };
 #endif // MAINDIALOG_H

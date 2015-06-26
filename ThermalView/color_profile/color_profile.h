@@ -43,6 +43,6 @@ public:
 		return m_name;
 	}
 	
-	virtual wxImage getImage(const ThermalFrame & frame) const = 0;
+	virtual wxImage getImage(const ThermalFrame & frame, uint16_t min_val, uint16_t max_val) const = 0;
 	virtual wxImage getGradient() const = 0;
 };

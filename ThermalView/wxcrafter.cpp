@@ -30,12 +30,40 @@ MainDialogBaseClass::MainDialogBaseClass(wxWindow* parent, wxWindowID id, const 
     
     mainSizer->Add(boxSizer17, 1, wxALL|wxEXPAND, 5);
     
+    wxBoxSizer* boxSizer43 = new wxBoxSizer(wxVERTICAL);
+    
+    boxSizer17->Add(boxSizer43, 1, wxALL|wxEXPAND, 0);
+    
+    wxBoxSizer* boxSizer45 = new wxBoxSizer(wxHORIZONTAL);
+    
+    boxSizer43->Add(boxSizer45, 1, wxALL|wxEXPAND, 0);
+    
     m_picture = new wxImageView(this, wxID_ANY);
-    boxSizer17->Add(m_picture, 1, wxALL|wxEXPAND, 5);
+    boxSizer45->Add(m_picture, 1, wxALL|wxEXPAND, 5);
     
     m_gradient = new wxImageView(this, wxID_ANY);
-    boxSizer17->Add(m_gradient, 0, wxRIGHT|wxTOP|wxBOTTOM|wxEXPAND, 5);
+    boxSizer45->Add(m_gradient, 0, wxRIGHT|wxTOP|wxBOTTOM|wxEXPAND, 5);
     m_gradient->SetMinSize(wxSize(15,-1));
+    
+    wxBoxSizer* boxSizer47 = new wxBoxSizer(wxHORIZONTAL);
+    
+    boxSizer43->Add(boxSizer47, 0, wxALL|wxEXPAND, 0);
+    
+    wxBoxSizer* boxSizer49 = new wxBoxSizer(wxVERTICAL);
+    
+    boxSizer47->Add(boxSizer49, 1, wxALL|wxEXPAND, 0);
+    
+    m_slider_low = new wxSlider(this, wxID_ANY, 2000, 2000, 20000, wxDefaultPosition, wxSize(-1,-1), wxSL_SELRANGE|wxSL_HORIZONTAL);
+    m_slider_low->SetToolTip(_("Low Limit"));
+    m_slider_low->Enable(false);
+    
+    boxSizer49->Add(m_slider_low, 0, wxALL|wxEXPAND, 5);
+    
+    m_slider_high = new wxSlider(this, wxID_ANY, 2000, 2000, 20000, wxDefaultPosition, wxSize(-1,-1), wxSL_SELRANGE|wxSL_HORIZONTAL);
+    m_slider_high->SetToolTip(_("High Limit"));
+    m_slider_high->Enable(false);
+    
+    boxSizer49->Add(m_slider_high, 0, wxALL|wxEXPAND, 5);
     
     wxBoxSizer* boxSizer19 = new wxBoxSizer(wxVERTICAL);
     
@@ -72,6 +100,11 @@ MainDialogBaseClass::MainDialogBaseClass(wxWindow* parent, wxWindowID id, const 
     boxSizer19->Add(m_lb_profile, 0, wxALL|wxEXPAND, 5);
     m_lb_profile->SetMinSize(wxSize(87,-1));
     
+    m_check_auto_range = new wxCheckBox(this, wxID_ANY, _("Autorange"), wxDefaultPosition, wxSize(-1,-1), 0);
+    m_check_auto_range->SetValue(true);
+    
+    boxSizer19->Add(m_check_auto_range, 0, wxALL, 5);
+    
     boxSizer19->Add(0, 0, 1, wxALL, 5);
     
     m_button_save = new wxButton(this, wxID_ANY, _("Save"), wxDefaultPosition, wxSize(-1,-1), 0);
@@ -86,30 +119,36 @@ MainDialogBaseClass::MainDialogBaseClass(wxWindow* parent, wxWindowID id, const 
     m_lb_sizes->SetMinSize(wxSize(87,-1));
     
     SetName(wxT("MainDialogBaseClass"));
-    SetSizeHints(615,400);
+    SetSizeHints(615,467);
     if ( GetSizer() ) {
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
     // Connect events
+    m_slider_low->Connect(wxEVT_SCROLL_CHANGED, wxScrollEventHandler(MainDialogBaseClass::OnSlider_lowScrollChanged), NULL, this);
+    m_slider_high->Connect(wxEVT_SCROLL_CHANGED, wxScrollEventHandler(MainDialogBaseClass::OnSlider_highScrollChanged), NULL, this);
     m_button_connect->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_connectButtonClicked), NULL, this);
     m_button_stop->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_stopButtonClicked), NULL, this);
     m_button_take_one->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_take_oneButtonClicked), NULL, this);
     m_button_get_cal->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_get_calButtonClicked), NULL, this);
     m_check_use_extra_cal->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnCheck_use_extra_calCheckboxClicked), NULL, this);
     m_lb_profile->Connect(wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(MainDialogBaseClass::OnLb_profileChoiceSelected), NULL, this);
+    m_check_auto_range->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnCheck_auto_rangeCheckboxClicked), NULL, this);
     m_button_save->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_saveButtonClicked), NULL, this);
     
 }
 
 MainDialogBaseClass::~MainDialogBaseClass()
 {
+    m_slider_low->Disconnect(wxEVT_SCROLL_CHANGED, wxScrollEventHandler(MainDialogBaseClass::OnSlider_lowScrollChanged), NULL, this);
+    m_slider_high->Disconnect(wxEVT_SCROLL_CHANGED, wxScrollEventHandler(MainDialogBaseClass::OnSlider_highScrollChanged), NULL, this);
     m_button_connect->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_connectButtonClicked), NULL, this);
     m_button_stop->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_stopButtonClicked), NULL, this);
     m_button_take_one->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_take_oneButtonClicked), NULL, this);
     m_button_get_cal->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_get_calButtonClicked), NULL, this);
     m_check_use_extra_cal->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnCheck_use_extra_calCheckboxClicked), NULL, this);
     m_lb_profile->Disconnect(wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(MainDialogBaseClass::OnLb_profileChoiceSelected), NULL, this);
+    m_check_auto_range->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnCheck_auto_rangeCheckboxClicked), NULL, this);
     m_button_save->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_saveButtonClicked), NULL, this);
     
 }

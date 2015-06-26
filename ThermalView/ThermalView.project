@@ -157,8 +157,6 @@
     <File Name="color_profile/color_profile.h"/>
     <File Name="color_profile/gray.h"/>
     <File Name="color_profile/iron.h"/>
-    <File Name="color_profile/trippy.cpp"/>
-    <File Name="color_profile/trippy.h"/>
     <File Name="color_profile/gradient.cpp"/>
     <File Name="color_profile/gradient.h"/>
     <File Name="color_profile/amber.h"/>

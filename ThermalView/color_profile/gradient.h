@@ -44,6 +44,6 @@ protected:
 public:
 	GradientProfile(const std::string & name, const std::vector< std::pair<float, pcRGB> > & pattern, uint16_t granularity = 512);
 
-	wxImage getImage(const ThermalFrame & frame) const override;
+	wxImage getImage(const ThermalFrame & frame, uint16_t min_val, uint16_t max_val) const override;
 	wxImage getGradient() const override;
 };

@@ -40,9 +40,12 @@ MainDialog::MainDialog(wxWindow* parent)
 	
 	m_get_extra_cal		= false;
 	m_use_extra_cal		= false;
-	m_first_after_cal		= false;
+	m_first_after_cal	= false;
 	m_get_one_after_cal	= false;
 	m_got_image			= false;
+	m_auto_range		= true;
+	m_manual_min		= 2000;
+	m_manual_max		= 18000;
 	
 
 	m_profiles.push_back(std::unique_ptr<ColorProfile>(new GrayProfile()) );
@@ -146,6 +149,15 @@ void MainDialog::OnMsgFrameReady(wxCommandEvent &)
 	std::lock_guard<std::recursive_mutex> lck(m_mx);
 	
 	m_picture->setImage(m_new_img);
+
+	m_slider_low->SetSelection(m_frame_extra.m_min_val, m_frame_extra.m_max_val);
+	m_slider_high->SetSelection(m_frame_extra.m_min_val, m_frame_extra.m_max_val);
+
+	if (m_auto_range)
+	{
+		m_slider_low->SetValue(m_frame_extra.m_min_val);
+		m_slider_high->SetValue(m_frame_extra.m_max_val);
+	}
 	
 	if (!m_got_image)
 	{
@@ -269,4 +281,67 @@ void MainDialog::OnButton_saveButtonClicked(wxCommandEvent& event)
 	
 	if ( !to_save.SaveFile(fd.GetPath()) )
 		wxMessageBox("Failed to save file");
+}
+
+
+// Autorange checkbox
+void MainDialog::OnCheck_auto_rangeCheckboxClicked(wxCommandEvent& event)
+{
+	std::lock_guard<std::recursive_mutex> lck(m_mx);
+
+	m_auto_range = m_check_auto_range->IsChecked();
+
+	if (!m_auto_range)
+	{
+		m_manual_min = m_slider_low->GetValue();
+		m_manual_max = m_slider_high->GetValue();
+
+		m_slider_low->Enable();
+		m_slider_high->Enable();
+	}
+	else
+	{
+		m_slider_low->Disable();
+		m_slider_high->Disable();
+	}
+}
+
+
+// Low limit
+void MainDialog::OnSlider_lowScrollChanged(wxScrollEvent& event)
+{
+	std::lock_guard<std::recursive_mutex> lck(m_mx);
+
+	if (!m_auto_range)
+	{
+		m_manual_min = m_slider_low->GetValue();
+
+		if (m_manual_min > m_manual_max)
+		{
+			m_manual_min = m_manual_max;
+			m_slider_low->SetValue(m_manual_min);
+		}
+
+		UpdateFrame();
+	}
+}
+
+
+// High limit
+void MainDialog::OnSlider_highScrollChanged(wxScrollEvent& event)
+{
+	std::lock_guard<std::recursive_mutex> lck(m_mx);
+
+	if (!m_auto_range)
+	{
+		m_manual_max = m_slider_high->GetValue();
+
+		if (m_manual_max < m_manual_min)
+		{
+			m_manual_max = m_manual_min;
+			m_slider_high->SetValue(m_manual_max);
+		}
+
+		UpdateFrame();
+	}
 }
