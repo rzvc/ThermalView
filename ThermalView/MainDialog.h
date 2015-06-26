@@ -39,6 +39,7 @@ class MainDialog : public MainDialogBaseClass
 public:
 	SeekThermal				m_thermal;				// The camera interface
 	ThermalFrame				m_frame;				// Current frame on display
+	ThermalFrame				m_frame_extra;	// Current frame on display after extra calibration
 	wxImage					m_new_img;				// The new image
 	
 	std::recursive_mutex		m_mx;

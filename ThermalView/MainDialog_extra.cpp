@@ -105,19 +105,19 @@ void MainDialog::UpdateFrame()
 		return;
 	
 	// Make a copy, we don't want to alter it
-	ThermalFrame frame = m_frame;
+	m_frame_extra = m_frame;
 	
 	
 	// Handle extra calibration
 	if (!m_extra_cal.empty() && m_use_extra_cal)
 	{
-		frame.applyOffsetCalibration(m_extra_cal);
-		frame.computeMinMax();
+		m_frame_extra.applyOffsetCalibration(m_extra_cal);
+		m_frame_extra.computeMinMax();
 	}
 
 
-	m_new_img = m_profiles[m_sel_profile]->getImage(frame);
-	
+	m_new_img = m_profiles[m_sel_profile]->getImage(m_frame_extra);
+
 		
 	QueueEvent(new wxCommandEvent(ON_MSG_FRAME_READY));
 }
