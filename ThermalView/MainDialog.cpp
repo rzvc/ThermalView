@@ -65,7 +65,16 @@ MainDialog::MainDialog(wxWindow* parent)
 	m_thermal.onDisconnected.connect(std::bind(&MainDialog::OnConnectionStatusChange, this));
 	m_thermal.onStreamingStart.connect(std::bind(&MainDialog::OnStreamingStatusChange, this));
 	m_thermal.onStreamingStop.connect(std::bind(&MainDialog::OnStreamingStatusChange, this));
-	
+
+
+	// Populate the interpolation LB
+	m_lb_interpolation->Append("Normal");
+	m_lb_interpolation->Append("Bilinear");
+	m_lb_interpolation->Append("Bicubic");
+
+	m_lb_interpolation->SetSelection(0);
+	m_quality = wxIMAGE_QUALITY_NORMAL;
+
 	
 	// Populate the color profile LB
 	for (size_t i = 0; i < m_profiles.size(); ++i)
@@ -233,6 +242,38 @@ void MainDialog::OnCheck_use_extra_calCheckboxClicked(wxCommandEvent& event)
 }
 
 
+// Interpolation selector
+void MainDialog::OnLb_interpolationChoiceSelected(wxCommandEvent& event)
+{
+	std::lock_guard<std::recursive_mutex> lck(m_mx);
+
+	int sel = m_lb_interpolation->GetSelection();
+
+	if (sel == wxNOT_FOUND)
+		sel = -1;
+
+	if (sel >= 0)
+	{
+		switch (sel)
+		{
+			case 1:
+				m_quality = wxIMAGE_QUALITY_BILINEAR;
+				break;
+
+			case 2:
+				m_quality = wxIMAGE_QUALITY_BICUBIC;
+				break;
+
+			default:
+				m_quality = wxIMAGE_QUALITY_NORMAL;
+				break;
+		}
+
+		m_picture->setQuality(m_quality);
+	}
+}
+
+
 // Color Profile
 void MainDialog::OnLb_profileChoiceSelected(wxCommandEvent& event)
 {
@@ -270,12 +311,12 @@ void MainDialog::OnButton_saveButtonClicked(wxCommandEvent& event)
 			break;
 		
 		case 1:
-			to_save = m_new_img.Scale(412, 312);
+			to_save = m_new_img.Scale(412, 312, m_quality);
 			break;
 		
 		default:
 		case 2:
-			to_save = m_new_img.Scale(824, 624);
+			to_save = m_new_img.Scale(824, 624, m_quality);
 			break;
 	}
 	

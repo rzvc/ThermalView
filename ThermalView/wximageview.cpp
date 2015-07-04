@@ -35,12 +35,14 @@ END_EVENT_TABLE()
 wxImageView::wxImageView()
 {
 	m_zoom_type = ZOOM_KEEP_RATIO;
+	m_quality = wxIMAGE_QUALITY_NORMAL;
 }
 
 wxImageView::wxImageView(wxWindow * parent, wxWindowID id)
 	: wxControl(parent, id)
 {
 	m_zoom_type = ZOOM_KEEP_RATIO;
+	m_quality = wxIMAGE_QUALITY_NORMAL;
 }
 
 wxImageView::~wxImageView()
@@ -65,6 +67,13 @@ void wxImageView::setZoomType(ZoomType zoom_type)
 {
 	m_zoom_type = zoom_type;
 	
+	updateView();
+}
+
+void wxImageView::setQuality(wxImageResizeQuality resize_quality)
+{
+	m_quality = resize_quality;
+
 	updateView();
 }
 
@@ -111,6 +120,7 @@ void wxImageView::updateView()
 		int client_height;
 
 		GetClientSize(&client_width, &client_height);
+
 		
 		if (m_zoom_type == ZOOM_KEEP_RATIO)
 		{
@@ -133,11 +143,11 @@ void wxImageView::updateView()
 			}
 
 			// Scale the image
-			m_img_scaled = wxBitmap(m_img.Scale(sz_x, sz_y));
+			m_img_scaled = wxBitmap(m_img.Scale(sz_x, sz_y, m_quality));
 		}
 		else
 		{
-			m_img_scaled = wxBitmap(m_img.Scale(client_width, client_height));
+			m_img_scaled = wxBitmap(m_img.Scale(client_width, client_height, m_quality));
 		}
 	}
 	

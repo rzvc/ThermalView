@@ -32,9 +32,11 @@ public:
 	enum ZoomType { ZOOM_KEEP_RATIO, ZOOM_STRETCH };
 	
 private:
-	wxImage m_img;
-	wxBitmap m_img_scaled;
-	ZoomType m_zoom_type;
+	wxImage		m_img;
+	wxBitmap	m_img_scaled;
+	ZoomType	m_zoom_type;
+
+	wxImageResizeQuality	m_quality;
 
 public:
 	DECLARE_DYNAMIC_CLASS(wxImageView);
@@ -47,6 +49,7 @@ public:
 	void clearImage();
 	
 	void setZoomType(ZoomType zoom_type);
+	void setQuality(wxImageResizeQuality resize_quality);
 	
 	void OnPaint(wxPaintEvent & event);
 	void OnSize(wxSizeEvent & event);

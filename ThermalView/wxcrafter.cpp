@@ -94,6 +94,12 @@ MainDialogBaseClass::MainDialogBaseClass(wxWindow* parent, wxWindowID id, const 
     
     boxSizer19->Add(m_check_use_extra_cal, 0, wxALL, 5);
     
+    wxArrayString m_lb_interpolationArr;
+    m_lb_interpolation = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), m_lb_interpolationArr, 0);
+    
+    boxSizer19->Add(m_lb_interpolation, 0, wxALL, 5);
+    m_lb_interpolation->SetMinSize(wxSize(87,-1));
+    
     wxArrayString m_lb_profileArr;
     m_lb_profile = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), m_lb_profileArr, 0);
     
@@ -132,6 +138,7 @@ MainDialogBaseClass::MainDialogBaseClass(wxWindow* parent, wxWindowID id, const 
     m_button_take_one->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_take_oneButtonClicked), NULL, this);
     m_button_get_cal->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_get_calButtonClicked), NULL, this);
     m_check_use_extra_cal->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnCheck_use_extra_calCheckboxClicked), NULL, this);
+    m_lb_interpolation->Connect(wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(MainDialogBaseClass::OnLb_interpolationChoiceSelected), NULL, this);
     m_lb_profile->Connect(wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(MainDialogBaseClass::OnLb_profileChoiceSelected), NULL, this);
     m_check_auto_range->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnCheck_auto_rangeCheckboxClicked), NULL, this);
     m_button_save->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_saveButtonClicked), NULL, this);
@@ -147,6 +154,7 @@ MainDialogBaseClass::~MainDialogBaseClass()
     m_button_take_one->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_take_oneButtonClicked), NULL, this);
     m_button_get_cal->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_get_calButtonClicked), NULL, this);
     m_check_use_extra_cal->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnCheck_use_extra_calCheckboxClicked), NULL, this);
+    m_lb_interpolation->Disconnect(wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(MainDialogBaseClass::OnLb_interpolationChoiceSelected), NULL, this);
     m_lb_profile->Disconnect(wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(MainDialogBaseClass::OnLb_profileChoiceSelected), NULL, this);
     m_check_auto_range->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnCheck_auto_rangeCheckboxClicked), NULL, this);
     m_button_save->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainDialogBaseClass::OnButton_saveButtonClicked), NULL, this);

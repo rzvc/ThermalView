@@ -33,6 +33,7 @@ protected:
     wxButton* m_button_take_one;
     wxButton* m_button_get_cal;
     wxCheckBox* m_check_use_extra_cal;
+    wxChoice* m_lb_interpolation;
     wxChoice* m_lb_profile;
     wxCheckBox* m_check_auto_range;
     wxButton* m_button_save;
@@ -46,6 +47,7 @@ protected:
     virtual void OnButton_take_oneButtonClicked(wxCommandEvent& event) { event.Skip(); }
     virtual void OnButton_get_calButtonClicked(wxCommandEvent& event) { event.Skip(); }
     virtual void OnCheck_use_extra_calCheckboxClicked(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnLb_interpolationChoiceSelected(wxCommandEvent& event) { event.Skip(); }
     virtual void OnLb_profileChoiceSelected(wxCommandEvent& event) { event.Skip(); }
     virtual void OnCheck_auto_rangeCheckboxClicked(wxCommandEvent& event) { event.Skip(); }
     virtual void OnButton_saveButtonClicked(wxCommandEvent& event) { event.Skip(); }
