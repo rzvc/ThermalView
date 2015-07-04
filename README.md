@@ -2,12 +2,12 @@
 
 It's a CodeLite project.
 
-You will need at least:
+You will need <strong>at least</strong>:
 <ul>
   <li>c++11
-  <li>wxWidgets 3+
+  <li>wxWidgets 3
   <li>boost 1.54
-  <li>libusb
+  <li>libusb-1.0
 </ul>
 
 
