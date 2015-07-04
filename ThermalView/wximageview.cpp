@@ -22,12 +22,12 @@
  */
 
 #include "wximageview.h"
-
-#include "wxImageView.h"
+#include <wx/dcbuffer.h>
 
 IMPLEMENT_DYNAMIC_CLASS(wxImageView, wxControl);
 
 BEGIN_EVENT_TABLE(wxImageView, wxControl)
+	EVT_ERASE_BACKGROUND(wxImageView::OnEraseBackground)
 	EVT_PAINT(wxImageView::OnPaint)
 	EVT_SIZE(wxImageView::OnSize)
 END_EVENT_TABLE()
@@ -85,12 +85,24 @@ void wxImageView::OnSize(wxSizeEvent & event)
 	}
 }
 
+void wxImageView::OnEraseBackground(wxEraseEvent & event)
+{
+	if (m_img.IsOk())
+		return;			// Don't do any erasing if the image is ok, we'll take care of it during the paint event
+	else
+		event.Skip();
+}
+
 void wxImageView::OnPaint(wxPaintEvent & event)
 {
 	// If we don't have an image, don't paint it
 	if (m_img.IsOk())
 	{
-		wxPaintDC dc(this);
+		wxBufferedPaintDC dc(this);
+
+		// Erase background
+		dc.SetBackground(wxBrush(GetBackgroundColour(), wxSOLID));
+		dc.Clear();
 		
 		// Get the client size
 		int client_width;
@@ -99,10 +111,10 @@ void wxImageView::OnPaint(wxPaintEvent & event)
 		GetClientSize(&client_width, &client_height);
 		
 		// Get the image size
-		wxSize imgSz = m_img_scaled.GetSize();
+		wxSize img_sz = m_img_scaled.GetSize();
 		
-		int padding_left = (client_width - imgSz.GetWidth()) / 2;
-		int padding_top = (client_height - imgSz.GetHeight()) / 2;
+		int padding_left = (client_width - img_sz.GetWidth()) / 2;
+		int padding_top = (client_height - img_sz.GetHeight()) / 2;
 		
 		dc.DrawBitmap(m_img_scaled, padding_left, padding_top);
 	}

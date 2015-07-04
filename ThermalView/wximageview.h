@@ -51,6 +51,7 @@ public:
 	void setZoomType(ZoomType zoom_type);
 	void setQuality(wxImageResizeQuality resize_quality);
 	
+	void OnEraseBackground(wxEraseEvent & event);
 	void OnPaint(wxPaintEvent & event);
 	void OnSize(wxSizeEvent & event);
 	
