@@ -23,6 +23,7 @@
 
 #include "MainDialog.h"
 #include <functional>
+#include <fstream>
 #include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
@@ -449,34 +450,58 @@ void MainDialog::OnButton_edit_profileButtonClicked(wxCommandEvent& event)
 // Save
 void MainDialog::OnButton_saveButtonClicked(wxCommandEvent& event)
 {
-	wxFileDialog fd(this, "Save image", "", "", "PNG files (*.png)|*.png|JPEG files (*.jpg)|*.jpg|BMP files (*.bmp)|*.bmp", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+	std::string file_types = "PNG files (*.png)|*.png|JPEG files (*.jpg)|*.jpg|BMP files (*.bmp)|*.bmp";
+
+	// For 206 x 156 we can save in RAW
+	if (m_lb_sizes->GetSelection() == 0)
+		file_types += "|RAW files (*.raw)|*.raw";
+
+	
+	wxFileDialog fd(this, "Save image", "", "", file_types, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	
 	if (fd.ShowModal() == wxID_CANCEL)
 		return;
 	
 	
 	std::lock_guard<std::recursive_mutex> lck(m_mx);
-	
-	wxImage to_save;
-	
-	switch (m_lb_sizes->GetSelection())
+
+	// If we're saving RAW
+	if (fd.GetFilterIndex() == 3)
 	{
+		std::ofstream f(fd.GetPath().ToStdString().c_str(), std::ios::binary);
+
+		if (f.is_open())
+		{
+			f.write(reinterpret_cast<const char *>(&m_frame_extra.m_pixels[0]), sizeof(decltype(m_frame_extra.m_pixels)::value_type));
+
+			f.close();
+		}
+		else
+			wxMessageBox("Failed to open file for writing");
+	}
+	else
+	{
+		wxImage to_save;
+
+		switch (m_lb_sizes->GetSelection())
+		{
 		case 0:
 			to_save = m_new_img;
 			break;
-		
+
 		case 1:
 			to_save = m_new_img.Scale(412, 312, m_quality);
 			break;
-		
+
 		default:
 		case 2:
 			to_save = m_new_img.Scale(824, 624, m_quality);
 			break;
+		}
+
+		if (!to_save.SaveFile(fd.GetPath()))
+			wxMessageBox("Failed to save file");
 	}
-	
-	if ( !to_save.SaveFile(fd.GetPath()) )
-		wxMessageBox("Failed to save file");
 }
 
 
