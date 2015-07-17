@@ -51,6 +51,11 @@
     <File Name="wxcrafter.wxcp"/>
     <File Name="win_resources.rc"/>
   </VirtualDirectory>
+  <VirtualDirectory Name="color_profile">
+    <File Name="color_profile/color_profile.h"/>
+    <File Name="color_profile/gradient.cpp"/>
+    <File Name="color_profile/gradient.h"/>
+  </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -64,15 +69,16 @@
     <Configuration Name="Debug" CompilerType="MinGW ( TDM-GCC-32 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-O0;-std=c++11;-Wall;$(shell wx-config --cflags --debug)" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
-        <IncludePath Value="C:/opt/boost/include/boost-1_54"/>
+        <IncludePath Value="C:/opt/boost/1.58/include/boost-1_58"/>
         <IncludePath Value="C:/opt/libusb_2012.01.08/include/libusb-1.0"/>
       </Compiler>
       <Linker Options="$(shell wx-config --static=yes --libs --debug);-mwindows" Required="yes">
         <LibraryPath Value="C:/opt/libusb_2012.01.08/MinGW32/static"/>
-        <LibraryPath Value="C:/opt/boost/lib"/>
+        <LibraryPath Value="C:/opt/boost/1.58/lib"/>
         <Library Value="libusb-1.0"/>
-        <Library Value="libboost_system-mt-d"/>
-        <Library Value="libboost_thread-mt-d"/>
+        <Library Value="libboost_system-mgw49-mt-d-1_58"/>
+        <Library Value="libboost_thread-mgw49-mt-d-1_58"/>
+        <Library Value="libboost_filesystem-mgw49-mt-d-1_58"/>
       </Linker>
       <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>
@@ -110,16 +116,17 @@
     <Configuration Name="Release" CompilerType="MinGW ( TDM-GCC-32 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-O2;-std=c++11;-Wall;$(shell wx-config --cflags)" C_Options="-O2;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
-        <IncludePath Value="C:/opt/boost/include/boost-1_54"/>
+        <IncludePath Value="C:/opt/boost/1.58/include/boost-1_58"/>
         <IncludePath Value="C:/opt/libusb_2012.01.08/include/libusb-1.0"/>
         <Preprocessor Value="NDEBUG"/>
       </Compiler>
       <Linker Options="$(shell wx-config --static=yes --libs);-mwindows" Required="yes">
         <LibraryPath Value="C:/opt/libusb_2012.01.08/MinGW32/static"/>
-        <LibraryPath Value="C:/opt/boost/lib"/>
+        <LibraryPath Value="C:/opt/boost/1.58/lib"/>
         <Library Value="libusb-1.0"/>
-        <Library Value="libboost_system-mt"/>
-        <Library Value="libboost_thread-mt"/>
+        <Library Value="libboost_system-mgw49-mt-1_58"/>
+        <Library Value="libboost_thread-mgw49-mt-1_58"/>
+        <Library Value="libboost_filesystem-mgw49-mt-1_58"/>
       </Linker>
       <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>
@@ -155,13 +162,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <VirtualDirectory Name="color_profile">
-    <File Name="color_profile/color_profile.h"/>
-    <File Name="color_profile/gray.h"/>
-    <File Name="color_profile/iron.h"/>
-    <File Name="color_profile/gradient.cpp"/>
-    <File Name="color_profile/gradient.h"/>
-    <File Name="color_profile/amber.h"/>
-    <File Name="color_profile/inverted_gray.h"/>
-  </VirtualDirectory>
 </CodeLite_Project>

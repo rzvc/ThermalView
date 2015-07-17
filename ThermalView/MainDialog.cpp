@@ -247,7 +247,7 @@ void MainDialog::OnProfileEditorSave()
 
 void MainDialog::OnProfileEditorSaveAs()
 {
-	std::string name = wxGetTextFromUser("Please enter the name of the new profile: ");
+	std::string name = wxGetTextFromUser("Please enter the name of the new profile: ").ToStdString();
 
 	if (!name.empty())
 	{
@@ -275,7 +275,8 @@ void MainDialog::OnProfileEditorSaveAs()
 
 
 		// Fire the event to take care of the change
-		OnLb_profileChoiceSelected(wxCommandEvent());
+		wxCommandEvent dummy;
+		OnLb_profileChoiceSelected(dummy);
 	}
 }
 

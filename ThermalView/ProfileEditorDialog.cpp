@@ -30,8 +30,8 @@ static std::string float_to_str(float val)
 {
 	int fract = static_cast<int>((val - static_cast<int>(val)) * 100);
 
-	std::string int_str = to_string(static_cast<int>(val));
-	std::string fract_str = to_string(fract);
+	std::string int_str = boost::lexical_cast<string>(static_cast<int>(val));
+	std::string fract_str = boost::lexical_cast<string>(fract);
 
 	if (fract_str.size() == 1)
 		fract_str.insert(fract_str.begin(), '0');
@@ -92,7 +92,7 @@ void ProfileEditorDialog::SetGranularity(uint16_t granularity)
 {
 	m_granularity = granularity;
 
-	m_text_granularity->SetValue(to_string(granularity));
+	m_text_granularity->SetValue(boost::lexical_cast<string>(granularity));
 
 	SetGranularityError(false);
 }
@@ -272,12 +272,12 @@ void ProfileEditorDialog::OnText_colorTextUpdated(wxCommandEvent& event)
 {
 	NO_ON_CHANGE();
 
-	string str = m_text_color->GetValue();
+	string str = m_text_color->GetValue().ToStdString();
 
 	// If it's a proper color
 	if (regex_match(str, regex("[0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}")))
 	{
-		transform(str.begin(), str.end(), str.begin(), toupper);
+		transform(str.begin(), str.end(), str.begin(), static_cast<int (*)(int)>(toupper));
 
 		GradientProfile::gpRGB rgb;
 
@@ -310,7 +310,7 @@ void ProfileEditorDialog::OnText_rankTextUpdated(wxCommandEvent& event)
 {
 	NO_ON_CHANGE();
 
-	string str = m_text_rank->GetValue();
+	string str = m_text_rank->GetValue().ToStdString();
 
 	float val = 0;
 
@@ -341,7 +341,7 @@ void ProfileEditorDialog::OnText_granularityTextUpdated(wxCommandEvent& event)
 {
 	NO_ON_CHANGE();
 
-	string str = m_text_granularity->GetValue();
+	string str = m_text_granularity->GetValue().ToStdString();
 
 	// Try to get a float value from that text box
 	try

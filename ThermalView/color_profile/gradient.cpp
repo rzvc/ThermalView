@@ -25,6 +25,7 @@
 #include <fstream>
 #include <sstream>
 #include <regex>
+#include <algorithm>
 #include <boost/algorithm/string/trim.hpp>
 
 
@@ -37,7 +38,7 @@ static const size_t MAX_GRADIENT_HEIGHT = 1000;
 
 //////////////////////////////////////////////////////////////////////////
 
-static char * hex_chars = "0123456789ABCDEF";
+static const char * hex_chars = "0123456789ABCDEF";
 
 #define HEX_BYTE(b) ( std::string() + hex_chars[(b) >> 4] + hex_chars[(b) & 0x0F] )
 
@@ -89,7 +90,7 @@ GradientProfile::GradientProfile(const std::string & file)
 			if (str.empty())
 				break;
 
-			transform(str.begin(), str.end(), str.begin(), toupper);
+			transform(str.begin(), str.end(), str.begin(), static_cast<int (*)(int)>(toupper));
 
 			// Figure out the RGB value
 			gpRGB rgb;
@@ -101,7 +102,7 @@ GradientProfile::GradientProfile(const std::string & file)
 				rgb.b = from_hex(str[4]) * 16 + from_hex(str[5]);
 			}
 			else
-				throw std::exception(("Invalid color value " + str).c_str());
+				throw std::runtime_error("Invalid color value " + str);
 
 			m_pattern.push_back(Pattern::value_type(rank, rgb));
 		}
@@ -114,7 +115,7 @@ GradientProfile::GradientProfile(const std::string & file)
 		createProfile();
 	}
 	else
-		throw std::exception(("Failed to open file '" + file + "'").c_str());
+		throw std::runtime_error("Failed to open file '" + file + "'");
 }
 
 void GradientProfile::createProfile()
