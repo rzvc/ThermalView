@@ -247,7 +247,36 @@ void MainDialog::OnProfileEditorSave()
 
 void MainDialog::OnProfileEditorSaveAs()
 {
-	wxMessageBox("Not implemented");
+	std::string name = wxGetTextFromUser("Please enter the name of the new profile: ");
+
+	if (!name.empty())
+	{
+		wxFileDialog fd(this, "Save color profile", "", "", "Gradient Profile Palette files (*.gppal)|*.gppal", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+
+		fd.SetDirectory("./profiles");
+
+		if (fd.ShowModal() == wxID_CANCEL)
+			return;
+
+		// Alright, let's save and set it
+		std::lock_guard<std::recursive_mutex> lck(m_mx);
+
+		PGradientProfile profile(new GradientProfile(fd.GetPath().ToStdString(), name, m_profile_editor.GetPattern(), m_profile_editor.GetGranularity()));
+
+		profile->save();
+
+
+		// Add it to the list
+		m_profiles.push_back(std::move(profile));
+
+		int pos = m_lb_profile->Append((*m_profiles.rbegin())->getName());
+
+		m_lb_profile->SetSelection(pos);
+
+
+		// Fire the event to take care of the change
+		OnLb_profileChoiceSelected(wxCommandEvent());
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -411,6 +440,7 @@ void MainDialog::OnButton_edit_profileButtonClicked(wxCommandEvent& event)
 		m_profile_editor.SetGranularity(profile->getGranularity());
 
 		m_profile_editor.Show();
+		m_profile_editor.SetFocus();
 	}
 }
 
