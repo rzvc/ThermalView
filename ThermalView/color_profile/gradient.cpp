@@ -86,6 +86,9 @@ GradientProfile::GradientProfile(const std::string & file)
 			f >> rank;
 			f >> str;
 
+			if (str.empty())
+				break;
+
 			transform(str.begin(), str.end(), str.begin(), toupper);
 
 			// Figure out the RGB value
@@ -222,7 +225,7 @@ const GradientProfile::Pattern & GradientProfile::getPattern() const
 
 uint16_t GradientProfile::getGranularity() const
 {
-	return m_rgb.size();
+	return m_granularity;
 }
 
 const string & GradientProfile::getFile() const
@@ -237,6 +240,7 @@ bool GradientProfile::save() const
 	if (f.is_open())
 	{
 		f << m_name << endl;
+		f << m_granularity << endl;
 
 		f.precision(2);
 
