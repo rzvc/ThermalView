@@ -116,6 +116,8 @@ MainDialog::MainDialog(wxWindow* parent)
 
 MainDialog::~MainDialog()
 {
+	m_profile_editor.Close();
+
 	m_thermal.close();
 }
 
