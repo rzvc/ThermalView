@@ -1,15 +1,16 @@
 # ThermalView
 
-It's a CodeLite project.
+CodeLite & VS 2013 solutions.
 
 You will need <strong>at least</strong>:
 <ul>
   <li>c++11
   <li>wxWidgets 3
-  <li>boost 1.54
+  <li>boost 1.54 *
   <li>libusb-1.0
 </ul>
 
+Note: Should work with boost 1.54, but I switched to 1.58 to get rid of some of the warnings that get generated when compiling with g++.
 
 # License
 
