@@ -103,6 +103,10 @@ void MainDialog::UpdateFrame()
 	// If we don't have a real profile selected, stop
 	if ( m_sel_profile < 0 || m_sel_profile > static_cast<int>(m_profiles.size()) )
 		return;
+
+	// If we don't have any data, return
+	if (m_frame.m_pixels.empty())
+		return;
 	
 	// Make a copy, we don't want to alter it
 	m_frame_extra = m_frame;
@@ -116,11 +120,13 @@ void MainDialog::UpdateFrame()
 	}
 
 
+	const auto & profile = m_use_preview_profile ? m_preview_profile : m_profiles[m_sel_profile];
+
 	// Update the image to be displayed
 	if (m_auto_range)
-		m_new_img = m_profiles[m_sel_profile]->getImage(m_frame_extra, m_frame_extra.m_min_val, m_frame.m_max_val);
+		m_new_img = profile->getImage(m_frame_extra, m_frame_extra.m_min_val, m_frame.m_max_val);
 	else
-		m_new_img = m_profiles[m_sel_profile]->getImage(m_frame_extra, m_manual_min, m_manual_max);
+		m_new_img = profile->getImage(m_frame_extra, m_manual_min, m_manual_max);
 
 		
 	QueueEvent(new wxCommandEvent(ON_MSG_FRAME_READY));

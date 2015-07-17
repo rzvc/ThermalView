@@ -28,22 +28,46 @@
 
 class GradientProfile : public ColorProfile
 {
-protected:
-	struct pcRGB
+public:
+	struct gpRGB
 	{
 		uint8_t r;
 		uint8_t g;
 		uint8_t b;
 		
-		pcRGB(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
-		pcRGB() {}
+		gpRGB(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
+		gpRGB() {}
+
+		std::string getHex() const;
+
+		bool operator == (const gpRGB & other) const
+		{
+			return r == other.r && g == other.g && b == other.b;
+		}
 	};
+
+	typedef std::vector< std::pair<float, gpRGB> > Pattern;
 	
-	std::vector<pcRGB> m_rgb;
+protected:
+	std::string			m_file;			// The file where it should be stored
+	std::vector<gpRGB>	m_rgb;			// The gradient
+	Pattern				m_pattern;		// The pattern that was used to create this profile
+	uint16_t			m_granularity;	// How many points should the gradient have
 	
 public:
-	GradientProfile(const std::string & name, const std::vector< std::pair<float, pcRGB> > & pattern, uint16_t granularity = 512);
+	GradientProfile(const std::string & file, const std::string & name, const Pattern & pattern, uint16_t granularity = 512);
+	GradientProfile(const std::string & file);
 
 	wxImage getImage(const ThermalFrame & frame, uint16_t min_val, uint16_t max_val) const override;
 	wxImage getGradient() const override;
+
+	const Pattern & getPattern() const;
+	uint16_t getGranularity() const;
+
+	const std::string & getFile() const;
+
+	bool save() const;
+
+private:
+	void createProfile();	// Creates the profile based on the given pattern and granularity
 };

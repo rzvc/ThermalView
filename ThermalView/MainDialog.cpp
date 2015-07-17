@@ -23,18 +23,17 @@
 
 #include "MainDialog.h"
 #include <functional>
+#include <boost/filesystem.hpp>
 
-#include "color_profile/gray.h"
-#include "color_profile/inverted_gray.h"
-#include "color_profile/iron.h"
-#include "color_profile/amber.h"
+namespace fs = boost::filesystem;
 
 wxDEFINE_EVENT(ON_MSG_FRAME_READY, wxCommandEvent);
 wxDEFINE_EVENT(ON_MSG_CONNECTION_STATUS_CHANGE, wxCommandEvent);
 wxDEFINE_EVENT(ON_MSG_STREAMING_STATUS_CHANGE, wxCommandEvent);
 
 MainDialog::MainDialog(wxWindow* parent)
-    : MainDialogBaseClass(parent)
+    : MainDialogBaseClass(parent),
+	m_profile_editor(this)
 {
 	SetIcon(wxIcon("aaaFirstIcon", wxBITMAP_TYPE_ICO_RESOURCE));
 	
@@ -46,25 +45,37 @@ MainDialog::MainDialog(wxWindow* parent)
 	m_auto_range		= true;
 	m_manual_min		= 2000;
 	m_manual_max		= 18000;
+
+	m_use_preview_profile = false;
 	
 
-	m_profiles.push_back(std::unique_ptr<ColorProfile>(new GrayProfile()) );
-	m_profiles.push_back(std::unique_ptr<ColorProfile>(new InvertedGrayProfile()) );
-	m_profiles.push_back(std::unique_ptr<ColorProfile>(new IronProfile()) );
-	m_profiles.push_back(std::unique_ptr<ColorProfile>(new AmberProfile()) );
+	// Load profiles
+	for (auto & file : fs::directory_iterator("profiles"))
+	{
+		if (fs::is_regular_file(file))
+			m_profiles.push_back(std::unique_ptr<ColorProfile>(new GradientProfile(file.path().string())));
+	}
+
+	assert(!m_profiles.empty());
 
 	
-	// Connect wx Events
+	// Connect wx events
 	Bind(ON_MSG_FRAME_READY, &MainDialog::OnMsgFrameReady, this);
 	Bind(ON_MSG_CONNECTION_STATUS_CHANGE, &MainDialog::OnMsgConnectionStatusChange, this);
 	Bind(ON_MSG_STREAMING_STATUS_CHANGE, &MainDialog::OnMsgStreamingStatusChange, this);
 
-	// Connect SeekThermal Events
+	// Connect SeekThermal events
 	m_thermal.onNewFrame.connect(std::bind(&MainDialog::OnNewFrame, this, std::placeholders::_1));
 	m_thermal.onConnecting.connect(std::bind(&MainDialog::OnConnectionStatusChange, this));
 	m_thermal.onDisconnected.connect(std::bind(&MainDialog::OnConnectionStatusChange, this));
 	m_thermal.onStreamingStart.connect(std::bind(&MainDialog::OnStreamingStatusChange, this));
 	m_thermal.onStreamingStop.connect(std::bind(&MainDialog::OnStreamingStatusChange, this));
+
+	// Connect Profile Editor events
+	m_profile_editor.onUpdated.connect(std::bind(&MainDialog::OnProfileEditorUpdate, this));
+	m_profile_editor.onApply.connect(std::bind(&MainDialog::OnProfileEditorApply, this));
+	m_profile_editor.onSave.connect(std::bind(&MainDialog::OnProfileEditorSave, this));
+	m_profile_editor.onSaveAs.connect(std::bind(&MainDialog::OnProfileEditorSaveAs, this));
 
 
 	// Populate the interpolation LB
@@ -96,7 +107,7 @@ MainDialog::MainDialog(wxWindow* parent)
 	
 	m_lb_sizes->SetSelection(0);
 	
-	
+
 	// Try to connect to the camera
 	if (m_thermal.connect())
 		m_thermal.getStream();
@@ -175,6 +186,69 @@ void MainDialog::OnMsgFrameReady(wxCommandEvent &)
 	}
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+// Events from the Profile Editor
+//////////////////////////////////////////////////////////////////////////
+void MainDialog::OnProfileEditorUpdate()
+{
+	std::lock_guard<std::recursive_mutex> lck(m_mx);
+
+	bool old_state = m_use_preview_profile;
+	m_use_preview_profile = m_profile_editor.IsPreview();
+
+	if (m_use_preview_profile)
+	{
+		// Generate the new profile
+		m_preview_profile = PGradientProfile(new GradientProfile("preview", "preview", m_profile_editor.GetPattern(), m_profile_editor.GetGranularity()));
+
+		// Update the gradient
+		m_gradient->setImage(m_preview_profile->getGradient());
+	}
+	// If before this event we were in preview mode, we have to restore the default gradient, which is currently
+	// showing the m_preview_profile gradient
+	else if (old_state)
+	{
+		m_gradient->setImage(m_profiles[m_sel_profile]->getGradient());
+	}
+
+	UpdateFrame();
+}
+
+
+void MainDialog::OnProfileEditorApply()
+{
+	std::lock_guard<std::recursive_mutex> lck(m_mx);
+
+	assert(m_profiles[m_sel_profile]->getType() == ColorProfile::TYPE_GRADIENT);
+
+	auto profile = dynamic_cast<GradientProfile*>(m_profiles[m_sel_profile].get());
+
+	m_profiles[m_sel_profile] = PGradientProfile(new GradientProfile(profile->getFile(), profile->getName(), m_profile_editor.GetPattern(), m_profile_editor.GetGranularity()));
+
+	UpdateFrame();
+}
+
+
+void MainDialog::OnProfileEditorSave()
+{
+	std::lock_guard<std::recursive_mutex> lck(m_mx);
+
+	assert(m_profiles[m_sel_profile]->getType() == ColorProfile::TYPE_GRADIENT);
+
+	OnProfileEditorApply();
+
+	auto profile = dynamic_cast<GradientProfile*>( m_profiles[m_sel_profile].get() );
+
+	if (!profile->save())
+		wxMessageBox("Failed to save file '" + profile->getFile() + "'");
+}
+
+
+void MainDialog::OnProfileEditorSaveAs()
+{
+	wxMessageBox("Not implemented");
+}
 
 //////////////////////////////////////////////////////////////////////////
 // UI events
@@ -285,9 +359,59 @@ void MainDialog::OnLb_profileChoiceSelected(wxCommandEvent& event)
 		m_sel_profile = -1;
 		
 	if (m_sel_profile >= 0)
+	{
 		m_gradient->setImage(m_profiles[m_sel_profile]->getGradient());
+
+		//////////////////////////////////////////////////////////////////////////
+		// Profile Editor handling
+
+		// If it's a gradient profile
+		if (m_profiles[m_sel_profile]->getType() == ColorProfile::TYPE_GRADIENT)
+		{
+			m_button_edit_profile->Enable(true);
+
+			// Update the editor
+			if (m_profile_editor.IsVisible())
+			{
+				auto profile = dynamic_cast<GradientProfile *>(m_profiles[m_sel_profile].get());
+
+				m_profile_editor.SetPattern(profile->getPattern());
+				m_profile_editor.SetGranularity(profile->getGranularity());
+			}
+		}
+		else
+		{
+			m_button_edit_profile->Enable(false);
+
+			if (m_profile_editor.IsVisible())
+				m_profile_editor.Hide();
+		}
+		//////////////////////////////////////////////////////////////////////////
+	}
 	
 	UpdateFrame();
+}
+
+
+// Edit Profile
+void MainDialog::OnButton_edit_profileButtonClicked(wxCommandEvent& event)
+{
+	std::lock_guard<std::recursive_mutex> lck(m_mx);
+
+	m_sel_profile = m_lb_profile->GetSelection();
+
+	if (m_sel_profile == wxNOT_FOUND)
+		m_sel_profile = -1;
+
+	if (m_sel_profile >= 0 && m_profiles[m_sel_profile]->getType() == ColorProfile::TYPE_GRADIENT)
+	{
+		auto profile = dynamic_cast<GradientProfile *>(m_profiles[m_sel_profile].get());
+
+		m_profile_editor.SetPattern(profile->getPattern());
+		m_profile_editor.SetGranularity(profile->getGranularity());
+
+		m_profile_editor.Show();
+	}
 }
 
 

@@ -40,20 +40,18 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainDialog.cpp" />
     <ClCompile Include="MainDialog_extra.cpp" />
+    <ClCompile Include="ProfileEditorDialog.cpp" />
     <ClCompile Include="thermal.cpp" />
     <ClCompile Include="wxcrafter.cpp" />
     <ClCompile Include="wxcrafter_bitmaps.cpp" />
     <ClCompile Include="wximageview.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="color_profile\amber.h" />
     <ClInclude Include="color_profile\color_profile.h" />
     <ClInclude Include="color_profile\gradient.h" />
-    <ClInclude Include="color_profile\gray.h" />
-    <ClInclude Include="color_profile\inverted_gray.h" />
-    <ClInclude Include="color_profile\iron.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="MainDialog.h" />
+    <ClInclude Include="ProfileEditorDialog.h" />
     <ClInclude Include="thermal.h" />
     <ClInclude Include="wxcrafter.h" />
     <ClInclude Include="wximageview.h" />

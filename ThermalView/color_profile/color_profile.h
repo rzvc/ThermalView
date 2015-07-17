@@ -31,16 +31,27 @@
 
 class ColorProfile
 {
-private:
+public:
+	enum Type { TYPE_CUSTOM, TYPE_GRADIENT };
+
+protected:
 	std::string m_name;
+
+private:
+	Type m_type;
 	
 public:
-	ColorProfile(const std::string & name) : m_name(name) {}
+	ColorProfile(const std::string & name, Type type = TYPE_CUSTOM) : m_name(name), m_type(type) {}
 	virtual ~ColorProfile() {}
 	
 	const std::string & getName() const
 	{
 		return m_name;
+	}
+
+	Type getType() const
+	{
+		return m_type;
 	}
 	
 	virtual wxImage getImage(const ThermalFrame & frame, uint16_t min_val, uint16_t max_val) const = 0;

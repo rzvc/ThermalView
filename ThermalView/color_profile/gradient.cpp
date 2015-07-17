@@ -22,60 +22,147 @@
  */
 
 #include "color_profile/gradient.h"
+#include <fstream>
+#include <sstream>
+#include <regex>
+#include <boost/algorithm/string/trim.hpp>
+
+
+using namespace std;
+
 
 static const size_t MAX_GRADIENT_HEIGHT = 1000;
 
 
-GradientProfile::GradientProfile(const std::string & name, const std::vector< std::pair<float, pcRGB> > & pattern, uint16_t granularity)
-	: ColorProfile(name)
+
+//////////////////////////////////////////////////////////////////////////
+
+static char * hex_chars = "0123456789ABCDEF";
+
+#define HEX_BYTE(b) ( std::string() + hex_chars[(b) >> 4] + hex_chars[(b) & 0x0F] )
+
+
+std::string GradientProfile::gpRGB::getHex() const
+{
+	return HEX_BYTE(r) + HEX_BYTE(g) + HEX_BYTE(b);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+static unsigned char from_hex(char c)
+{
+	if (c <= '9')
+		return c - '0';
+	else
+		return 10 + (c - 'A');
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+
+// Regular constructor
+GradientProfile::GradientProfile(const std::string & file, const std::string & name, const Pattern & pattern, uint16_t granularity)
+	: ColorProfile(name, TYPE_GRADIENT), m_file(file), m_pattern(pattern), m_granularity(granularity)
+{
+	createProfile();
+}
+
+// Constructor from file
+GradientProfile::GradientProfile(const std::string & file)
+	: ColorProfile("", TYPE_GRADIENT), m_file(file)
+{
+	ifstream f(file);
+
+	if (f.is_open())
+	{
+		f >> m_name;
+		f >> m_granularity;
+
+		while (!f.eof())
+		{
+			float	rank;
+			string	str;
+
+			f >> rank;
+			f >> str;
+
+			transform(str.begin(), str.end(), str.begin(), toupper);
+
+			// Figure out the RGB value
+			gpRGB rgb;
+
+			if (regex_match(str, regex("[0-9A-Fa-f]{6}")))
+			{
+				rgb.r = from_hex(str[0]) * 16 + from_hex(str[1]);
+				rgb.g = from_hex(str[2]) * 16 + from_hex(str[3]);
+				rgb.b = from_hex(str[4]) * 16 + from_hex(str[5]);
+			}
+			else
+				throw std::exception(("Invalid color value " + str).c_str());
+
+			m_pattern.push_back(Pattern::value_type(rank, rgb));
+		}
+
+		// We need at least two data points
+		assert(m_pattern.size() >= 2);
+
+		f.close();
+
+		createProfile();
+	}
+	else
+		throw std::exception(("Failed to open file '" + file + "'").c_str());
+}
+
+void GradientProfile::createProfile()
 {
 	size_t pos = 1;	// The current position
-	
+
 	// Initial data
-	pcRGB start_color	= pattern[0].second;
-	pcRGB stop_color	= pattern[1].second;
-	
-	float stop_ratio	= pattern[1].first;
+	gpRGB start_color = m_pattern[0].second;
+	gpRGB stop_color = m_pattern[1].second;
+
+	float stop_ratio = m_pattern[1].first;
 
 	// Calculate the ratios
 	size_t first_value = 0;
-	size_t last_value = granularity * stop_ratio;
-	
+	size_t last_value = m_granularity * stop_ratio;
+
 	size_t span = last_value - first_value;
-	
+
 	float r_mul = (static_cast<float>(stop_color.r) - start_color.r) / span;
 	float g_mul = (static_cast<float>(stop_color.g) - start_color.g) / span;
 	float b_mul = (static_cast<float>(stop_color.b) - start_color.b) / span;
-	
-	
+
+
 	// Now let's fill it
-	for (size_t i = 0; i < granularity; ++i)
+	for (size_t i = 0; i < m_granularity; ++i)
 	{
-		if ( i > last_value )
+		if (i > last_value)
 		{
-			if (++pos == pattern.size())
+			if (++pos == m_pattern.size())
 				break;
-			
-			start_color	= stop_color;
-			stop_color		= pattern[pos].second;
-			
-			stop_ratio		= pattern[pos].first;
-			
-			first_value	= i - 1;
-			last_value		= (granularity - 1) * stop_ratio;
-			
+
+			start_color = stop_color;
+			stop_color = m_pattern[pos].second;
+
+			stop_ratio = m_pattern[pos].first;
+
+			first_value = i - 1;
+			last_value = (m_granularity - 1) * stop_ratio;
+
 			span = last_value - first_value;
-			
+
 			r_mul = (static_cast<float>(stop_color.r) - start_color.r) / span;
 			g_mul = (static_cast<float>(stop_color.g) - start_color.g) / span;
 			b_mul = (static_cast<float>(stop_color.b) - start_color.b) / span;
 		}
-		
+
 		uint8_t r = start_color.r + (i - first_value) * r_mul;
 		uint8_t g = start_color.g + (i - first_value) * g_mul;
 		uint8_t b = start_color.b + (i - first_value) * b_mul;
-		
-		m_rgb.push_back(pcRGB(r, g, b));
+
+		m_rgb.push_back(gpRGB(r, g, b));
 	}
 }
 
@@ -126,4 +213,40 @@ wxImage GradientProfile::getGradient() const
 	}
 	
 	return img;
+}
+
+const GradientProfile::Pattern & GradientProfile::getPattern() const
+{
+	return m_pattern;
+}
+
+uint16_t GradientProfile::getGranularity() const
+{
+	return m_rgb.size();
+}
+
+const string & GradientProfile::getFile() const
+{
+	return m_file;
+}
+
+bool GradientProfile::save() const
+{
+	ofstream f(m_file);
+
+	if (f.is_open())
+	{
+		f << m_name << endl;
+
+		f.precision(2);
+
+		for (const auto & p : m_pattern)
+			f << p.first << " " << p.second.getHex() << endl;
+
+		f.close();
+
+		return true;
+	}
+	else
+		return false;
 }

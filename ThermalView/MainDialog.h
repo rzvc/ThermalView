@@ -28,6 +28,7 @@
 #include "thermal.h"
 #include "frame.h"
 #include "color_profile/color_profile.h"
+#include "ProfileEditorDialog.h"
 
 #include <mutex>
 
@@ -37,6 +38,9 @@ wxDECLARE_EVENT(ON_MSG_FRAME_READY, wxCommandEvent);
 class MainDialog : public MainDialogBaseClass
 {
 public:
+	typedef std::unique_ptr<ColorProfile> PColorProfile;
+	typedef std::unique_ptr<GradientProfile> PGradientProfile;
+
 	SeekThermal					m_thermal;				// The camera interface
 	ThermalFrame				m_frame;				// Current frame on display
 	ThermalFrame				m_frame_extra;			// Current frame on display after extra calibration
@@ -58,9 +62,12 @@ public:
 	wxImageResizeQuality		m_quality;				// The image quality
 	
 	
-	std::vector< std::unique_ptr<ColorProfile> >
-								m_profiles;				// The color profile container
+	std::vector<PColorProfile>	m_profiles;				// The color profile container
 	int							m_sel_profile;			// The selected profile
+
+	ProfileEditorDialog			m_profile_editor;		// The profile editor dialog
+	PColorProfile				m_preview_profile;		// The preview profile, generated from the profile editor data
+	bool						m_use_preview_profile;	// Indicates that we should use the preview profile
 	
 	
 	bool						m_got_image;			// Indicates that we receive at least one image
@@ -77,6 +84,12 @@ public:
 	void OnConnectionStatusChange();
 	void OnStreamingStatusChange();
 	void OnNewFrame(const std::vector<uint16_t> & data);
+
+	// Profile Editor events
+	void OnProfileEditorUpdate();
+	void OnProfileEditorApply();
+	void OnProfileEditorSave();
+	void OnProfileEditorSaveAs();
 	
 	// Main thread events
 	void OnMsgConnectionStatusChange(wxCommandEvent &);
@@ -94,7 +107,8 @@ protected:
     virtual void OnCheck_use_extra_calCheckboxClicked(wxCommandEvent& event);
 	virtual void OnLb_interpolationChoiceSelected(wxCommandEvent& event);
 	virtual void OnLb_profileChoiceSelected(wxCommandEvent& event);
-    virtual void OnButton_saveButtonClicked(wxCommandEvent& event);
+	virtual void OnButton_edit_profileButtonClicked(wxCommandEvent& event);
+	virtual void OnButton_saveButtonClicked(wxCommandEvent& event);
 	virtual void OnCheck_auto_rangeCheckboxClicked(wxCommandEvent& event);
 	virtual void OnSlider_lowScrollChanged(wxScrollEvent& event);
 	virtual void OnSlider_highScrollChanged(wxScrollEvent& event);

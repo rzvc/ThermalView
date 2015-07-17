@@ -37,6 +37,7 @@
     <File Name="frame.cpp"/>
     <File Name="thermal.cpp"/>
     <File Name="MainDialog_extra.cpp"/>
+    <File Name="ProfileEditorDialog.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="MainDialog.h"/>
@@ -44,6 +45,7 @@
     <File Name="wximageview.h"/>
     <File Name="frame.h"/>
     <File Name="thermal.h"/>
+    <File Name="ProfileEditorDialog.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="wxcrafter.wxcp"/>

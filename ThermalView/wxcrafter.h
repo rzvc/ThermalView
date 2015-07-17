@@ -20,6 +20,10 @@
 #include <wx/checkbox.h>
 #include <wx/choice.h>
 #include <wx/arrstr.h>
+#include <wx/listbox.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+#include <wx/clrpicker.h>
 
 class MainDialogBaseClass : public wxDialog
 {
@@ -35,6 +39,7 @@ protected:
     wxCheckBox* m_check_use_extra_cal;
     wxChoice* m_lb_interpolation;
     wxChoice* m_lb_profile;
+    wxButton* m_button_edit_profile;
     wxCheckBox* m_check_auto_range;
     wxButton* m_button_save;
     wxChoice* m_lb_sizes;
@@ -49,12 +54,48 @@ protected:
     virtual void OnCheck_use_extra_calCheckboxClicked(wxCommandEvent& event) { event.Skip(); }
     virtual void OnLb_interpolationChoiceSelected(wxCommandEvent& event) { event.Skip(); }
     virtual void OnLb_profileChoiceSelected(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnButton_edit_profileButtonClicked(wxCommandEvent& event) { event.Skip(); }
     virtual void OnCheck_auto_rangeCheckboxClicked(wxCommandEvent& event) { event.Skip(); }
     virtual void OnButton_saveButtonClicked(wxCommandEvent& event) { event.Skip(); }
 
 public:
     MainDialogBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Thermal View"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(615,467), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX);
     virtual ~MainDialogBaseClass();
+};
+
+
+class ProfileEditorDialogBase : public wxDialog
+{
+protected:
+    wxListBox* m_lb_pattern;
+    wxStaticText* m_staticText103;
+    wxTextCtrl* m_text_granularity;
+    wxTextCtrl* m_text_rank;
+    wxTextCtrl* m_text_color;
+    wxColourPickerCtrl* m_colour_picker;
+    wxButton* m_button_add;
+    wxButton* m_button_rem;
+    wxCheckBox* m_check_preview;
+    wxButton* m_button_apply;
+    wxButton* m_button_save;
+    wxButton* m_button_save_as;
+
+protected:
+    virtual void OnLb_patternListboxSelected(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnText_granularityTextUpdated(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnText_rankTextUpdated(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnText_colorTextUpdated(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnColour_pickerColourpickerChanged(wxColourPickerEvent& event) { event.Skip(); }
+    virtual void OnButton_addButtonClicked(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnButton_remButtonClicked(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnCheck_previewCheckboxClicked(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnButton_applyButtonClicked(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnButton_saveButtonClicked(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnButton_save_asButtonClicked(wxCommandEvent& event) { event.Skip(); }
+
+public:
+    ProfileEditorDialogBase(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Edit Profile"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(235,300), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER);
+    virtual ~ProfileEditorDialogBase();
 };
 
 #endif
