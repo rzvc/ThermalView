@@ -474,7 +474,7 @@ void MainDialog::OnButton_saveButtonClicked(wxCommandEvent& event)
 
 		if (f.is_open())
 		{
-			f.write(reinterpret_cast<const char *>(&m_frame_extra.m_pixels[0]), sizeof(decltype(m_frame_extra.m_pixels)::value_type));
+			f.write(reinterpret_cast<const char *>(&m_frame_extra.m_pixels[0]), m_frame_extra.m_pixels.size() * sizeof(decltype(m_frame_extra.m_pixels)::value_type));
 
 			f.close();
 		}
