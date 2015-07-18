@@ -78,8 +78,13 @@ ProfileEditorDialog::~ProfileEditorDialog()
 
 void ProfileEditorDialog::SetPattern(const GradientProfile::Pattern & pattern)
 {
-	m_pattern = pattern;
+	// Copy the pattern in reverse order
+	m_pattern.resize(pattern.size());
 
+	copy(pattern.rbegin(), pattern.rend(), m_pattern.begin());
+
+
+	// Update the UI
 	m_lb_pattern->Clear();
 	ElementClear();
 
@@ -97,9 +102,15 @@ void ProfileEditorDialog::SetGranularity(uint16_t granularity)
 	SetGranularityError(false);
 }
 
-const GradientProfile::Pattern & ProfileEditorDialog::GetPattern() const
+GradientProfile::Pattern ProfileEditorDialog::GetPattern() const
 {
-	return m_pattern;
+	GradientProfile::Pattern res;
+
+	// Copy in reverse order
+	res.resize(m_pattern.size());
+	copy(m_pattern.rbegin(), m_pattern.rend(), res.begin());
+
+	return res;
 }
 
 uint16_t ProfileEditorDialog::GetGranularity() const
@@ -199,7 +210,7 @@ void ProfileEditorDialog::ElementSetRank(float rank)
 	SetRankError(false);
 
 	// Sort values
-	std::sort(m_pattern.begin(), m_pattern.end(), [](const PairType & a, const PairType & b) { return a.first < b.first; });
+	std::sort(m_pattern.begin(), m_pattern.end(), [](const PairType & a, const PairType & b) { return a.first > b.first; });
 
 	// Update listbox
 	m_lb_pattern->Clear();
@@ -389,9 +400,9 @@ void ProfileEditorDialog::OnButton_addButtonClicked(wxCommandEvent& event)
 
 		m_pattern.insert(m_pattern.begin() + sel, item);
 
-		m_lb_pattern->Insert(m_lb_pattern->GetString(sel), sel + 1);
+		m_lb_pattern->Insert(m_lb_pattern->GetString(sel), sel);
 
-		m_lb_pattern->SetSelection(sel + 1);
+		m_lb_pattern->SetSelection(sel);
 	}
 
 	ElementUpdate();
@@ -417,6 +428,10 @@ void ProfileEditorDialog::OnButton_remButtonClicked(wxCommandEvent& event)
 	m_lb_pattern->Delete(sel);
 
 	ElementUpdate();
+
+	// Fire update event if we're in preview mode
+	if (m_check_preview->IsChecked())
+		onUpdated();
 }
 
 void ProfileEditorDialog::OnButton_applyButtonClicked(wxCommandEvent& event)

@@ -24,7 +24,7 @@ public:
 	void SetPattern(const GradientProfile::Pattern & pattern);
 	void SetGranularity(uint16_t granularity);
 
-	const GradientProfile::Pattern & GetPattern() const;
+	GradientProfile::Pattern GetPattern() const;
 	uint16_t GetGranularity() const;
 
 	bool IsPreview() const;
