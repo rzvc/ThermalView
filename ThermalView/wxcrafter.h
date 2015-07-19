@@ -4,8 +4,8 @@
 // Do not modify this file by hand!
 //////////////////////////////////////////////////////////////////////
 
-#ifndef WXCRAFTER_BASE_CLASSES_H
-#define WXCRAFTER_BASE_CLASSES_H
+#ifndef THERMALVIEW_THERMALVIEW_WXCRAFTER_BASE_CLASSES_H
+#define THERMALVIEW_THERMALVIEW_WXCRAFTER_BASE_CLASSES_H
 
 #include <wx/settings.h>
 #include <wx/xrc/xmlres.h>
@@ -24,6 +24,12 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/clrpicker.h>
+#if wxVERSION_NUMBER >= 2900
+#include <wx/persist.h>
+#include <wx/persist/toplevel.h>
+#include <wx/persist/bookctrl.h>
+#include <wx/persist/treebook.h>
+#endif
 
 class MainDialogBaseClass : public wxDialog
 {
@@ -41,6 +47,7 @@ protected:
     wxChoice* m_lb_profile;
     wxButton* m_button_edit_profile;
     wxCheckBox* m_check_auto_range;
+    wxImageView* m_histogram;
     wxButton* m_button_save;
     wxChoice* m_lb_sizes;
 
@@ -59,6 +66,22 @@ protected:
     virtual void OnButton_saveButtonClicked(wxCommandEvent& event) { event.Skip(); }
 
 public:
+    wxImageView* GetPicture() { return m_picture; }
+    wxImageView* GetGradient() { return m_gradient; }
+    wxSlider* GetSlider_low() { return m_slider_low; }
+    wxSlider* GetSlider_high() { return m_slider_high; }
+    wxButton* GetButton_connect() { return m_button_connect; }
+    wxButton* GetButton_stop() { return m_button_stop; }
+    wxButton* GetButton_take_one() { return m_button_take_one; }
+    wxButton* GetButton_get_cal() { return m_button_get_cal; }
+    wxCheckBox* GetCheck_use_extra_cal() { return m_check_use_extra_cal; }
+    wxChoice* GetLb_interpolation() { return m_lb_interpolation; }
+    wxChoice* GetLb_profile() { return m_lb_profile; }
+    wxButton* GetButton_edit_profile() { return m_button_edit_profile; }
+    wxCheckBox* GetCheck_auto_range() { return m_check_auto_range; }
+    wxImageView* GetHistogram() { return m_histogram; }
+    wxButton* GetButton_save() { return m_button_save; }
+    wxChoice* GetLb_sizes() { return m_lb_sizes; }
     MainDialogBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Thermal View"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(615,467), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX);
     virtual ~MainDialogBaseClass();
 };
@@ -94,6 +117,18 @@ protected:
     virtual void OnButton_save_asButtonClicked(wxCommandEvent& event) { event.Skip(); }
 
 public:
+    wxListBox* GetLb_pattern() { return m_lb_pattern; }
+    wxStaticText* GetStaticText103() { return m_staticText103; }
+    wxTextCtrl* GetText_granularity() { return m_text_granularity; }
+    wxTextCtrl* GetText_rank() { return m_text_rank; }
+    wxTextCtrl* GetText_color() { return m_text_color; }
+    wxColourPickerCtrl* GetColour_picker() { return m_colour_picker; }
+    wxButton* GetButton_add() { return m_button_add; }
+    wxButton* GetButton_rem() { return m_button_rem; }
+    wxCheckBox* GetCheck_preview() { return m_check_preview; }
+    wxButton* GetButton_apply() { return m_button_apply; }
+    wxButton* GetButton_save() { return m_button_save; }
+    wxButton* GetButton_save_as() { return m_button_save_as; }
     ProfileEditorDialogBase(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Edit Profile"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(235,300), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER);
     virtual ~ProfileEditorDialogBase();
 };

@@ -128,6 +128,55 @@ void MainDialog::UpdateFrame()
 	else
 		m_new_img = profile->getImage(m_frame_extra, m_manual_min, m_manual_max);
 
+
+	// Compute the new histogram
+	ComputeHistogram();
+
 		
 	QueueEvent(new wxCommandEvent(ON_MSG_FRAME_READY));
+}
+
+
+void MainDialog::ComputeHistogram()
+{
+	// Compute the histogram
+	std::vector<uint16_t> vect((m_frame_extra.m_max_val - m_frame_extra.m_min_val) + 1, 0);
+
+	uint16_t max_val = 0;
+
+	for (uint16_t v : m_frame_extra.m_pixels)
+	{
+		auto & elm = vect[v - m_frame_extra.m_min_val];
+
+		++elm;
+
+		if (elm > max_val)
+			max_val = elm;
+	}
+
+	// Create the histogram image
+	wxBitmap bmp(vect.size(), max_val + 1);
+	wxMemoryDC dc(bmp);
+
+	// Erase background
+	dc.SetBrush( wxBrush(GetBackgroundColour(), wxBRUSHSTYLE_SOLID) );
+	dc.SetPen( wxPen(GetBackgroundColour(), 0) );
+
+	dc.DrawRectangle(0, 0, vect.size(), max_val + 1);
+
+	// Paint the histogram
+	dc.SetPen(wxPen(wxColour(0, 0, 0), 1));
+
+	for (size_t i = 0; i < vect.size(); ++i)
+	{
+		uint16_t v = vect[i];
+
+		if (v)
+			dc.DrawLine(i, max_val, i, max_val - v);
+	}
+
+	dc.SelectObject(wxNullBitmap);
+
+	// Convert to image
+	m_new_historgram = bmp.ConvertToImage();
 }

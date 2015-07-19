@@ -119,6 +119,10 @@ MainDialogBaseClass::MainDialogBaseClass(wxWindow* parent, wxWindowID id, const 
     
     boxSizer19->Add(m_check_auto_range, 0, wxALL, 5);
     
+    m_histogram = new wxImageView(this, wxID_ANY);
+    boxSizer19->Add(m_histogram, 1, wxALL|wxEXPAND, 5);
+    m_histogram->SetMinSize(wxSize(-1,81));
+    
     boxSizer19->Add(0, 0, 1, wxALL, 5);
     
     m_button_save = new wxButton(this, wxID_ANY, _("Save"), wxDefaultPosition, wxSize(-1,-1), 0);
@@ -138,6 +142,13 @@ MainDialogBaseClass::MainDialogBaseClass(wxWindow* parent, wxWindowID id, const 
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
+#if wxVERSION_NUMBER >= 2900
+    if(!wxPersistenceManager::Get().Find(this)) {
+        wxPersistenceManager::Get().RegisterAndRestore(this);
+    } else {
+        wxPersistenceManager::Get().Restore(this);
+    }
+#endif
     // Connect events
     m_slider_low->Connect(wxEVT_SCROLL_CHANGED, wxScrollEventHandler(MainDialogBaseClass::OnSlider_lowScrollChanged), NULL, this);
     m_slider_high->Connect(wxEVT_SCROLL_CHANGED, wxScrollEventHandler(MainDialogBaseClass::OnSlider_highScrollChanged), NULL, this);
@@ -279,6 +290,13 @@ ProfileEditorDialogBase::ProfileEditorDialogBase(wxWindow* parent, wxWindowID id
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
+#if wxVERSION_NUMBER >= 2900
+    if(!wxPersistenceManager::Get().Find(this)) {
+        wxPersistenceManager::Get().RegisterAndRestore(this);
+    } else {
+        wxPersistenceManager::Get().Restore(this);
+    }
+#endif
     // Connect events
     m_lb_pattern->Connect(wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler(ProfileEditorDialogBase::OnLb_patternListboxSelected), NULL, this);
     m_text_granularity->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(ProfileEditorDialogBase::OnText_granularityTextUpdated), NULL, this);

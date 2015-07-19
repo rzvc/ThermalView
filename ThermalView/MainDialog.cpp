@@ -99,6 +99,10 @@ MainDialog::MainDialog(wxWindow* parent)
 	// Set the gradient image
 	m_gradient->setZoomType(wxImageView::ZOOM_STRETCH);
 	m_gradient->setImage(m_profiles[m_sel_profile]->getGradient());
+
+
+	// Set the histogram zoom mode
+	m_histogram->setZoomType(wxImageView::ZOOM_STRETCH);
 	
 
 	// Populate the save sizes
@@ -172,6 +176,7 @@ void MainDialog::OnMsgFrameReady(wxCommandEvent &)
 	std::lock_guard<std::recursive_mutex> lck(m_mx);
 	
 	m_picture->setImage(m_new_img);
+	m_histogram->setImage(m_new_historgram);
 
 	m_slider_low->SetSelection(m_frame_extra.m_min_val, m_frame_extra.m_max_val);
 	m_slider_high->SetSelection(m_frame_extra.m_min_val, m_frame_extra.m_max_val);

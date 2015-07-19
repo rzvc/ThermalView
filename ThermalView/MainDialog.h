@@ -45,6 +45,7 @@ public:
 	ThermalFrame				m_frame;				// Current frame on display
 	ThermalFrame				m_frame_extra;			// Current frame on display after extra calibration
 	wxImage						m_new_img;				// The new image
+	wxImage						m_new_historgram;		// The new histogram
 	
 	std::recursive_mutex		m_mx;
 	
@@ -98,6 +99,7 @@ public:
 	
 private:
 	void UpdateFrame();
+	void ComputeHistogram();
 	
 protected:
     virtual void OnButton_connectButtonClicked(wxCommandEvent& event);
