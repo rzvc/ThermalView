@@ -119,11 +119,11 @@ MainDialogBaseClass::MainDialogBaseClass(wxWindow* parent, wxWindowID id, const 
     
     boxSizer19->Add(m_check_auto_range, 0, wxALL, 5);
     
-    m_histogram = new wxImageView(this, wxID_ANY);
-    boxSizer19->Add(m_histogram, 1, wxALL|wxEXPAND, 5);
-    m_histogram->SetMinSize(wxSize(-1,81));
-    
     boxSizer19->Add(0, 0, 1, wxALL, 5);
+    
+    m_histogram = new wxImageView(this, wxID_ANY);
+    boxSizer19->Add(m_histogram, 0, wxALL|wxEXPAND, 5);
+    m_histogram->SetMinSize(wxSize(-1,77));
     
     m_button_save = new wxButton(this, wxID_ANY, _("Save"), wxDefaultPosition, wxSize(-1,-1), 0);
     m_button_save->Enable(false);

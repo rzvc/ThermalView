@@ -1461,8 +1461,27 @@
             }],
            "m_children": []
           }, {
-           "m_type": 4465,
+           "m_type": 4454,
            "proportion": 1,
+           "border": 5,
+           "gbSpan": "1,1",
+           "gbPosition": "0,0",
+           "m_styles": [],
+           "m_sizerFlags": ["wxALL", "wxLEFT", "wxRIGHT", "wxTOP", "wxBOTTOM"],
+           "m_properties": [{
+             "type": "string",
+             "m_label": "Name:",
+             "m_value": "Spacer35"
+            }, {
+             "type": "string",
+             "m_label": "Size:",
+             "m_value": "0,0"
+            }],
+           "m_events": [],
+           "m_children": []
+          }, {
+           "m_type": 4465,
+           "proportion": 0,
            "border": 5,
            "gbSpan": "1,1",
            "gbPosition": "0,0",
@@ -1475,11 +1494,11 @@
             }, {
              "type": "string",
              "m_label": "Size:",
-             "m_value": "-1,-1"
+             "m_value": "-1,77"
             }, {
              "type": "string",
              "m_label": "Minimum Size:",
-             "m_value": "-1,81"
+             "m_value": "-1,77"
             }, {
              "type": "string",
              "m_label": "Name:",
@@ -1528,25 +1547,6 @@
            "m_events": [],
            "m_children": [],
            "m_templInfoName": "wxImageView"
-          }, {
-           "m_type": 4454,
-           "proportion": 1,
-           "border": 5,
-           "gbSpan": "1,1",
-           "gbPosition": "0,0",
-           "m_styles": [],
-           "m_sizerFlags": ["wxALL", "wxLEFT", "wxRIGHT", "wxTOP", "wxBOTTOM"],
-           "m_properties": [{
-             "type": "string",
-             "m_label": "Name:",
-             "m_value": "Spacer35"
-            }, {
-             "type": "string",
-             "m_label": "Size:",
-             "m_value": "0,0"
-            }],
-           "m_events": [],
-           "m_children": []
           }, {
            "m_type": 4400,
            "proportion": 0,
